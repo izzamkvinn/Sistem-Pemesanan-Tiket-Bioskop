@@ -20,7 +20,7 @@
 | Anggota | Tugas Program | Tugas Dokumentasi |
 |---|---|---|
 | Vaneisha Raissa Hendriska | Menu utama, Create (input dan validasi usia, genre, jadwal), Delete | README | 
-| Kevin Izzam Muhammad | Membuat repository GitHub, Konfigurasi project, Read, Search, Update | pengelolaan repository |Dekomposisi masalah (Bab 1.2) |
+| Kevin Izzam Muhammad | Membuat repository GitHub, Konfigurasi project, Read, Search, Update, pengelolaan repository |Dekomposisi masalah (Bab 1.2) |
 | Reni Andriani | Perhitungan harga, diskon, dan cetak struk (bagian Create), pengujian | Deskripsi masalah (Bab 1.1) |
 
 ---
