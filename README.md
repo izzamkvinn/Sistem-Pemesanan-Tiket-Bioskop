@@ -1,9 +1,9 @@
-# Sistem Kasir Tiket Konser Musik "Nikmati Suara" (CLI)
+# Sistem Pembelian Tiket Bioskop "Cinema Ku" (CLI)
 
-**Kelas / Kelompok:** T1B / Kelompok-8ASIK 
-**Link Repository:** https://github.com
-**Mata Kuliah:** Pemrograman Dasar  
-**Tahun Akademik:** 2026/2027  
+**Kelas / Kelompok:** T1B / Kelompok-2
+**Link Repository:** [Isi Link GitHub]
+**Mata Kuliah:** Pemrograman Dasar
+**Tahun Akademik:** 2026/2027
 
 ---
 
@@ -11,43 +11,75 @@
 
 | No. | Nama Anggota | NIM | Akun GitHub | Tugas dan Tanggung Jawab |
 |---|---|---|---|---|
-| 1 | Maura Virginia Alfareza | `263140701111001` | `@mauravirginia` | Bertanggung jawab dalam pengelolaan repository GitHub, konfigurasi awal project (`.gitignore`, `tsconfig.json`, `package.json`), analisis permasalahan, Dokumentasi project (`README.md` & draft laporan) serta pengembangan fitur **Create** & **Update** transaksi/tiket. |
-| 2 | Trinanda Grace Tampubolon | `263140700111046` | `@trinandagrace` | Bertanggung jawab dalam penyusunan proposal/ Laporan, identifikasi entitas dan properti data, serta pengembangan fitur **Read** & **Search** riwayat pemesanan. |
-| 3 | Jon Kevin Prayoga Purba | `2263140700111040` | `@KevinPrayogga7` | Bertanggung jawab dalam pencatatan kontribusi anggota, pengembangan fitur **Delete** & kalkulasi biaya, serta pengujian program bisa berjalan atau tidak. |
+| 1 | Vaneisha Raissa Hendriska | `263140701111032` | `@vaneisharaissa` | Identifikasi entitas dan properti data, Penyusunan proposal/laporan, dokumentasi (`README.md` & draft laporan), serta pengembangan fitur **Registrasi, Login, Verifikasi Usia, Pemilihan Genre Film, dan Pemilihan Jadwal Hari**. |
+| 2 | Kevin Izzam Muhammad | `263140701111005` | `@izzamkvinn` | Pengelolaan repository GitHub, konfigurasi awal project (`.gitignore`, `tsconfig.json`, `package.json`), Penyusunan proposal/laporan, analisis permasalahan, serta pengembangan fitur **Pemilihan Jumlah Tiket, Perhitungan Harga, Diskon, dan Mencetak Struk**. |
+| 3 | Reni Andriani | `263140701111002` | `@reniandriani282628-droid` | Penyusunan proposal/laporan, Pencatatan kontribusi anggota, pengembangan fitur **Registrasi Akun, Riwayat Pemesanan, Pembatalan Pemesanan, dan Logout**, serta pengujian program. |
 
 ---
 
 ## B. Proposal & Analisis Awal
 
 ### 1. Tema & Deskripsi Masalah
-* **Tema:** Sistem Kasir & Manajemen Pemesanan Tiket Konser Musik "Nikmati Suara" Berbasis Console (TypeScript).
-* **Deskripsi Masalah:** Penyelenggara festival musik "Nikmati Suara" membutuhkan aplikasi kasir berbasis teks (*command-line*) yang praktis untuk memproses dan mengelola data pemesanan tiket secara terstruktur. Selain menghitung total pembayaran otomatis berdasarkan kategori tempat duduk (**VIP, CAT 1, Festival**), fase penjualan (**Presale/Normal**), tambahan **kaos merchandise**, serta **biaya admin metode pembayaran** (Transfer Bank, E-Wallet, Kartu Kredit), kasir juga membutuhkan fitur pengelolaan riwayat transaksi (**CRUD + Search**) agar pencatatan penjualan dan pembaruan data pembeli dapat dilakukan dengan cepat tanpa kesalahan hitung manual.
+* **Tema:** Sistem Pembelian & Manajemen Tiket Bioskop "Cinema Ku" Berbasis Console (TypeScript).
+* **Deskripsi Masalah:** Pengelola bioskop membutuhkan aplikasi berbasis teks (*command-line*) yang praktis agar pelanggan dapat memesan tiket secara mandiri dan terstruktur. Pelanggan harus mendaftar dan login terlebih dahulu, lalu sistem memverifikasi usia agar film dengan batasan umur (misalnya genre **Horor** 17+) hanya dapat dipesan oleh pelanggan yang memenuhi syarat. Setelah memilih **genre film**, **jumlah tiket**, dan **jadwal tayang : Senin-Minggu (Weekday/Weekend)**, sistem menghitung harga serta **diskon secara otomatis**, mencetak **struk**, dan menyimpan **riwayat pemesanan** yang dapat dibatalkan jika pelanggan berubah pikiran. Dengan begitu, kesalahan hitung manual dan antrean di loket dapat dikurangi.
 
 ### 2. Identifikasi Entitas & Properti Data
-**Entitas Utama: `TransaksiTiket`**
-* `idTransaksi`: `string` — Kode unik transaksi (contoh: `TRX-001`)
-* `namaPembeli`: `string` — Nama lengkap pembeli tiket
-* `kategoriTiket`: `string` — Pilihan area tempat duduk (`VIP`, `CAT 1`, atau `Festival`)
-* `fasePenjualan`: `string` — Fase pembelian tiket (`Presale` atau `Normal`)
-* `beliKaos`: `boolean` — Status pembelian kaos *merchandise* (`true` / `false`)
-* `metodePembayaran`: `string` — Metode pembayaran (`Transfer Bank`, `E-Wallet`, atau `Kartu Kredit`)
-* `hargaTiket`: `number` — Harga tiket dasar sesuai kategori dan fase penjualan
-* `hargaKaos`: `number` — Harga kaos (*promo* Rp 150.000 saat Presale atau Rp 250.000 saat Normal; Rp 0 jika tidak beli)
-* `biayaAdmin`: `number` — Biaya admin metode pembayaran (Bank: Rp 5.000, E-Wallet: Rp 2.000, Kartu Kredit: Rp 10.000)
-* `totalBayar`: `number` — Akumulasi total pembayaran (`hargaTiket + hargaKaos + biayaAdmin`)
 
-### 3. Daftar Fitur Utama (CRUD + Search) & Decomposition Awal
-1. **Create (Tambah Transaksi Pemesanan Tiket):**
-   * Menerima input data pembeli, kategori tiket, fase penjualan, opsi kaos *merchandise*, dan metode pembayaran.
-   * Menjalankan sub-proses kalkulasi harga tiket dasar, promo kaos (khusus Presale), biaya admin, dan total bayar secara otomatis, lalu menyimpan transaksi ke dalam daftar/array dan mencetak struk.
-2. **Read (Tampilkan Semua Riwayat Transaksi):**
-   * Menampilkan seluruh daftar transaksi tiket yang sudah tercatat beserta rincian kategori, status kaos, metode pembayaran, dan total pendapatan.
-3. **Update (Ubah Data Transaksi):**
-   * Mencari transaksi berdasarkan `idTransaksi`, memungkinkan kasir memperbarui data (seperti perubahan kategori tiket, status pembelian kaos, atau metode pembayaran), lalu menghitung ulang `totalBayar` secara otomatis.
-4. **Delete (Hapus / Batalkan Transaksi):**
-   * Menghapus data transaksi berdasarkan `idTransaksi` apabila terjadi pembatalan pesanan oleh pembeli (disertai konfirmasi sebelum menghapus).
-5. **Search (Cari Transaksi):**
-   * Mencari data pemesanan berdasarkan **ID Transaksi**, **Nama Pembeli**, atau filter **Kategori Tiket** (`VIP` / `CAT 1` / `Festival`).
+**Entitas 1: `Akun`**
+* `username`: `string` — Nama pengguna unik untuk login
+* `password`: `string` — Kata sandi akun
+* `namaLengkap`: `string` — Nama lengkap pengguna
+* `usia`: `number` — Usia pengguna (hasil verifikasi usia)
+
+**Entitas 2: `PesananTiket`**
+* `idPesanan`: `string` — Kode unik pesanan (contoh: `ORD-001`)
+* `username`: `string` — Pemilik pesanan (relasi ke `Akun`)
+* `genreFilm`: `string` — Genre yang dipilih (`Aksi`, `Komedi`, `Animasi`, `Drama`, `Horor`)
+* `batasUsia`: `number` — Batas usia minimum genre (Animasi: 0, Komedi: 13, Aksi: 13, Drama: 13, Horor: 17)
+* `jadwal`: `string` — Jadwal tayang (`Weekday` atau `Weekend`)
+* `jumlahTiket`: `number` — Banyak tiket yang dipesan (maksimal 10)
+* `hargaPerTiket`: `number` — Harga dasar per tiket (Weekday: Rp 35.000, Weekend: Rp 50.000)
+* `subtotal`: `number` — `hargaPerTiket × jumlahTiket`
+* `diskon`: `number` — Potongan harga otomatis (lihat aturan diskon)
+* `totalBayar`: `number` — `subtotal − diskon`
+* `status`: `string` — Status pesanan (`Aktif` atau `Dibatalkan`)
+
+**Aturan Diskon Otomatis:**
+| Kondisi | Diskon |
+|---|---|
+| Jadwal **Weekday** | 10% dari subtotal |
+| Membeli **3–4 tiket** | 5% dari subtotal |
+| Membeli **≥ 5 tiket** | 10% dari subtotal |
+
+> Diskon Weekday dan diskon jumlah tiket dapat digabung (dijumlahkan persentasenya).
+
+### 3. Daftar Fitur Utama & Decomposition Awal
+1. **Registrasi Akun:** Menerima nama lengkap, usia, username, dan password; memvalidasi username belum dipakai, lalu menyimpan akun ke dalam array.
+2. **Login:** Memeriksa kecocokan username dan password; batas percobaan login maksimal 3 kali.
+3. **Verifikasi Usia:** Memeriksa `usia` akun terhadap `batasUsia` genre yang dipilih; pesanan ditolak jika usia belum mencukupi.
+4. **Pilih Genre Film:** Menampilkan menu genre beserta batas usianya, lalu memvalidasi pilihan.
+5. **Pilih Jumlah Tiket:** Menerima jumlah tiket (1–10) dengan validasi input angka.
+6. **Pilih Jadwal (Weekday/Weekend):** Menentukan harga dasar per tiket berdasarkan jadwal.
+7. **Hitung Harga Otomatis:** Menghitung `subtotal = hargaPerTiket × jumlahTiket`.
+8. **Diskon Otomatis:** Menerapkan aturan diskon pada subtotal dan menghasilkan `totalBayar`.
+9. **Cetak Struk:** Menampilkan rincian pesanan (ID, nama, genre, jadwal, jumlah, subtotal, diskon, total bayar) di console.
+10. **Riwayat Pemesanan:** Menampilkan seluruh pesanan milik akun yang sedang login beserta statusnya.
+11. **Batalkan Pesanan:** Mengubah status pesanan menjadi `Dibatalkan` berdasarkan `idPesanan` (disertai konfirmasi sebelum membatalkan).
+12. **Log out:** Mengakhiri sesi pengguna dan kembali ke menu awal (Login/Registrasi).
+
+**Alur Program (Decomposition):**
+```
+Menu Awal → Registrasi / Login
+   └─ Menu Utama (setelah login)
+        ├─ Pesan Tiket
+        │    ├─ Pilih Genre → Verifikasi Usia
+        │    ├─ Pilih Jadwal → Pilih Jumlah Tiket
+        │    ├─ Hitung Harga → Hitung Diskon
+        │    └─ Simpan Pesanan → Cetak Struk
+        ├─ Riwayat Pemesanan
+        ├─ Batalkan Pesanan
+        └─ Log out
+```
 
 ---
 
@@ -55,10 +87,12 @@
 Pengembangan project dilakukan melalui beberapa tahapan:
 1. Persiapan repository public dan konfigurasi awal TypeScript (`.gitignore`, `tsconfig.json`, `package.json`, `src/index.ts`).
 2. Penyusunan proposal, analisis permasalahan, serta draft awal laporan (Sampul, Sub-bab 1.1, 1.2, dan rencana 3.2) di folder `docs/`.
-3. Perancangan struktur data (`interface`/`type` `TransaksiTiket`) dan alur logika program (*decomposition*).
-4. Implementasi fitur CRUD + Search serta integrasi logika perhitungan kasir dari versi UTS.
-5. Pengujian dan evaluasi program pada seluruh skenario input dan validasi.
-6. Penyusunan dokumentasi akhir dan laporan UAS.
+3. Perancangan struktur data (`interface` `Akun` dan `PesananTiket`) dan alur logika program (*decomposition*).
+4. Implementasi fitur autentikasi (Registrasi, Login, Log out) dan verifikasi usia.
+5. Implementasi fitur pemesanan (genre, jumlah, jadwal), perhitungan harga & diskon, serta cetak struk.
+6. Implementasi riwayat pemesanan dan pembatalan pesanan.
+7. Pengujian dan evaluasi program pada seluruh skenario input dan validasi.
+8. Penyusunan dokumentasi akhir dan laporan UAS.
 
 ---
 
@@ -70,5 +104,5 @@ Pengembangan project dilakukan melalui beberapa tahapan:
 - [ ] Menyiapkan program `"Hello console"` di `src/index.ts` dan memastikan dapat dijalankan oleh semua anggota.
 - [ ] Setiap anggota melakukan minimal 1 *commit* menggunakan akun GitHub masing-masing.
 - [ ] Melengkapi `README.md` awal (daftar anggota, NIM, akun GitHub, dan tabel pembagian tugas).
-- [ ] Mengunggah proposal & analisis awal (tema, deskripsi masalah, entitas & properti, fitur CRUD + Search, *decomposition* awal) pada `docs/` atau `README.md`.
+- [ ] Mengunggah proposal & analisis awal (tema, deskripsi masalah, entitas & properti, daftar fitur, *decomposition* awal) pada `docs/` atau `README.md`.
 - [ ] Menyimpan draft awal laporan (Halaman Sampul, Sub-bab 1.1, 1.2 awal, dan rencana tabel kontribusi 3.2) di folder `docs/` pada *branch* `main`.
