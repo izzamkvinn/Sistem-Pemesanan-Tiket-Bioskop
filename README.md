@@ -19,69 +19,101 @@
 
 ## B. Proposal & Analisis Awal
 
-### 1. Tema & Deskripsi Masalah
+### Tema & Deskripsi Masalah
 * **Tema:** Sistem Pembelian & Manajemen Tiket Bioskop "Cinema Ku" Berbasis Console (TypeScript).
-* **Deskripsi Masalah:** Pengelola bioskop membutuhkan aplikasi berbasis teks (*command-line*) yang praktis agar pelanggan dapat memesan tiket secara mandiri dan terstruktur. Pelanggan harus mendaftar dan login terlebih dahulu, lalu sistem memverifikasi usia agar film dengan batasan umur (misalnya genre **Horor** 17+) hanya dapat dipesan oleh pelanggan yang memenuhi syarat. Setelah memilih **genre film**, **jumlah tiket**, dan **jadwal tayang : Senin-Minggu (Weekday/Weekend)**, sistem menghitung harga serta **diskon secara otomatis**, mencetak **struk**, dan menyimpan **riwayat pemesanan** yang dapat dibatalkan jika pelanggan berubah pikiran. Dengan begitu, kesalahan hitung manual dan antrean di loket dapat dikurangi.
+* **Deskripsi Masalah:** Pengelolaan data pemesanan tiket bioskop yang masih dilakukan secara manual rentan terhadap kesalahan pencatatan, data ganda, dan salah hitung harga, terutama saat ada biaya tambahan akhir pekan dan diskon. Aplikasi console ini dibutuhkan agar data tiket dapat ditambah, dilihat, diubah, dihapus, dan dicari dengan cepat dan akurat. Total harga dihitung otomatis dari genre film, jumlah tiket, dan jenis hari tayang, sehingga kasir tidak perlu menghitung manual..
 
-### 2. Identifikasi Entitas & Properti Data
+###  Pengguna Sistem
+Kasir / petugas loket bioskop — operator utama yang mencatat dan mengubah pemesanan.
+Admin bioskop — mengelola dan memantau seluruh data tiket.
 
-**Entitas 1: `Akun`**
-* `username`: `string` — Nama pengguna unik untuk login
-* `password`: `string` — Kata sandi akun
-* `namaLengkap`: `string` — Nama lengkap pengguna
-* `usia`: `number` — Usia pengguna (hasil verifikasi usia)
+### Identifikasi Entitas & Properti Data
+| Properti | Tipe | Keterangan |
+|----------|------|------------|
+| id | string | Kode unik tiket, misal "TKT001" |
+| namaPemesan | string | Nama pembeli tiket |
+| genre | string | Action / Drama / Horor |
+| jumlahTiket | number | Banyak tiket yang dibeli |
+| totalHarga | number | Total bayar setelah biaya akhir pekan dan diskon |
+| isWeekend | boolean | true jika tayang akhir pekan |
+| sudahBayar | boolean | Status pembayaran |
 
-**Entitas 2: `PesananTiket`**
-* `idPesanan`: `string` — Kode unik pesanan (contoh: `ORD-001`)
-* `username`: `string` — Pemilik pesanan (relasi ke `Akun`)
-* `genreFilm`: `string` — Genre yang dipilih (`Aksi`, `Komedi`, `Animasi`, `Drama`, `Horor`)
-* `batasUsia`: `number` — Batas usia minimum genre (Animasi: 0, Komedi: 13, Aksi: 13, Drama: 13, Horor: 17)
-* `jadwal`: `string` — Jadwal tayang (`Weekday` atau `Weekend`)
-* `jumlahTiket`: `number` — Banyak tiket yang dipesan (maksimal 10)
-* `hargaPerTiket`: `number` — Harga dasar per tiket (Weekday: Rp 35.000, Weekend: Rp 50.000)
-* `subtotal`: `number` — `hargaPerTiket × jumlahTiket`
-* `diskon`: `number` — Potongan harga otomatis (lihat aturan diskon)
-* `totalBayar`: `number` — `subtotal − diskon`
-* `status`: `string` — Status pesanan (`Aktif` atau `Dibatalkan`)
+interface Tiket {
+  id: string;
+  namaPemesan: string;
+  genre: string;
+  jumlahTiket: number;
+  totalHarga: number;
+  isWeekend: boolean;
+  sudahBayar: boolean;
+}
 
-**Aturan Diskon Otomatis:**
-| Kondisi | Diskon |
-|---|---|
-| Jadwal **Weekday** | 10% dari subtotal |
-| Membeli **3–4 tiket** | 5% dari subtotal |
-| Membeli **≥ 5 tiket** | 10% dari subtotal |
+
+## Aturan Perhitungan Harga
+
+| Genre | Harga Dasar |
+|-------|-------------|
+| Action | Rp 50.000 |
+| Drama | Rp 40.000 |
+| Horor | Rp 45.000 |
+
+| Komponen | Aturan |
+|----------|--------|
+| Biaya tambahan Weekend | + Rp 15.000 per tiket. |
+| Harga per tiket | = harga dasar genre + biaya tambahan hari. |
+| Subtotal | = harga per tiket × jumlah tiket. |
+| Diskon 10% | diberikan jika subtotal ≥ Rp 150.000. |
+| Total bayar | = subtotal − diskon. |
+
+**Contoh:** 3 tiket Action di Weekend
+
+| Langkah | Perhitungan |
+|---------|-------------|
+| Subtotal | (50.000 + 15.000) × 3 = Rp 195.000 |
+| Diskon 10% | Rp 19.500 |
+| Total bayar | Rp 175.500 |
 
 > Diskon Weekday dan diskon jumlah tiket dapat digabung (dijumlahkan persentasenya).
 
-### 3. Daftar Fitur Utama & Decomposition Awal
-1. **Registrasi Akun:** Menerima nama lengkap, usia, username, dan password; memvalidasi username belum dipakai, lalu menyimpan akun ke dalam array.
-2. **Login:** Memeriksa kecocokan username dan password; batas percobaan login maksimal 3 kali.
-3. **Verifikasi Usia:** Memeriksa `usia` akun terhadap `batasUsia` genre yang dipilih; pesanan ditolak jika usia belum mencukupi.
-4. **Pilih Genre Film:** Menampilkan menu genre beserta batas usianya, lalu memvalidasi pilihan.
-5. **Pilih Jumlah Tiket:** Menerima jumlah tiket (1–10) dengan validasi input angka.
-6. **Pilih Jadwal (Weekday/Weekend):** Menentukan harga dasar per tiket berdasarkan jadwal.
-7. **Hitung Harga Otomatis:** Menghitung `subtotal = hargaPerTiket × jumlahTiket`.
-8. **Diskon Otomatis:** Menerapkan aturan diskon pada subtotal dan menghasilkan `totalBayar`.
-9. **Cetak Struk:** Menampilkan rincian pesanan (ID, nama, genre, jadwal, jumlah, subtotal, diskon, total bayar) di console.
-10. **Riwayat Pemesanan:** Menampilkan seluruh pesanan milik akun yang sedang login beserta statusnya.
-11. **Batalkan Pesanan:** Mengubah status pesanan menjadi `Dibatalkan` berdasarkan `idPesanan` (disertai konfirmasi sebelum membatalkan).
-12. **Log out:** Mengakhiri sesi pengguna dan kembali ke menu awal (Login/Registrasi).
 
-**Alur Program (Decomposition):**
-```
-Menu Awal → Registrasi / Login
-   └─ Menu Utama (setelah login)
-        ├─ Pesan Tiket
-        │    ├─ Pilih Genre → Verifikasi Usia
-        │    ├─ Pilih Jadwal → Pilih Jumlah Tiket
-        │    ├─ Hitung Harga → Hitung Diskon
-        │    └─ Simpan Pesanan → Cetak Struk
-        ├─ Riwayat Pemesanan
-        ├─ Batalkan Pesanan
-        └─ Log out
-```
+**Fitur**
+Create	Menambah pemesanan tiket baru
+Read	Menampilkan seluruh tiket dalam bentuk tabel di terminal
+Read by ID	Menampilkan detail satu tiket berdasarkan ID
+Update	Mengubah genre, jumlah tiket, jenis hari, dan status pembayaran
+Delete	Menghapus tiket berdasarkan ID
+Search	Mencari tiket berdasarkan nama pemesan atau genre film
 
----
+### Data Input
+Menu	Input
+Create	ID tiket, nama pemesan, genre film (Action/Drama/Horor), jumlah tiket, jenis hari (Weekday/Weekend)
+Read by ID	ID tiket yang dicari
+Update	ID tiket + data baru (genre, jumlah tiket, jenis hari, status pembayaran)
+Delete	ID tiket yang akan dihapus
+Search	Kata kunci (nama pemesan atau genre film)
+
+### Data Output
+Daftar seluruh tiket dalam bentuk tabel di terminal.
+Detail satu tiket (hasil Read by ID).
+Hasil pencarian berdasarkan kata kunci.
+Kalkulasi otomatis: harga per tiket, diskon 10% (jika total ≥ Rp 150.000), dan total bayar.
+Pesan notifikasi & validasi, misalnya:
+Data berhasil ditambahkan
+ID tidak ditemukan
+ID sudah terdaftar
+Jumlah tiket minimal 1
+Pilihan menu tidak valid
+
+### Struktur proyek
+
+UTS/
+├── src/
+│   ├── tiketbioskop.ts      # kode sumber utama
+│   └── tiketbioskop.js      # hasil kompilasi
+├── package.json
+├── package-lock.json
+└── tsconfig.json
+
 
 ## C. Rencana Pengembangan Project
 Pengembangan project dilakukan melalui beberapa tahapan:
@@ -95,14 +127,12 @@ Pengembangan project dilakukan melalui beberapa tahapan:
 8. Penyusunan dokumentasi akhir dan laporan UAS.
 
 ---
+## Yang sudah selesai di Progress 1
 
-## D. Progress Pengerjaan
-
-### Progress 1
-- [ ] Membuat repository GitHub dengan visibilitas **Public**.
-- [ ] Menyiapkan struktur awal project (`.gitignore`, `tsconfig.json`, `package.json`, dan `src/index.ts`).
-- [ ] Menyiapkan program `"Hello console"` di `src/index.ts` dan memastikan dapat dijalankan oleh semua anggota.
-- [ ] Setiap anggota melakukan minimal 1 *commit* menggunakan akun GitHub masing-masing.
-- [ ] Melengkapi `README.md` awal (daftar anggota, NIM, akun GitHub, dan tabel pembagian tugas).
-- [ ] Mengunggah proposal & analisis awal (tema, deskripsi masalah, entitas & properti, daftar fitur, *decomposition* awal) pada `docs/` atau `README.md`.
-- [ ] Menyimpan draft awal laporan (Halaman Sampul, Sub-bab 1.1, 1.2 awal, dan rencana tabel kontribusi 3.2) di folder `docs/` pada *branch* `main`.
+1. Repositori dibuat (Publik) — **Selesai**
+2. Pembagian tugas ditulis di README — **Selesai**
+3. Proposal dan analisis awal — **Selesai**
+4. Draf laporan di folder `docs/` — **Selesai**
+5. Semua anggota sudah punya minimal 1 komitmen — **Selesai**
+   
+**Tautan DOCS Laporan Bagian A:** [isi tautan di sini](https://docs.google.com/)
