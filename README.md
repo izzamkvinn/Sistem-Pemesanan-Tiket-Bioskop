@@ -1,7 +1,7 @@
 # Sistem Pembelian Tiket Bioskop "Cinema Ku" (CLI)
 
 **Kelas / Kelompok:** T1B / Kelompok-2
-**Link Repository:** [Isi Link GitHub]
+**Link Repository:** https://github.com/izzamkvinn/Sistem-Pemesanan-Tiket-Bioskop
 **Mata Kuliah:** Pemrograman Dasar
 **Tahun Akademik:** 2026/2027
 
